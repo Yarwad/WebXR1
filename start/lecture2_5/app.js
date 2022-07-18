@@ -26,7 +26,7 @@ class App{
 		
         const geometry = new THREE.TorusKnotBufferGeometry( 0.8, 0.3, 120, 16 ); 
         
-        const material = new THREE.MeshBasicMaterial( { color: 0xFF0000 });
+        const material = new THREE.MeshStandardMaterial( { color: 0xFFFF00,});
 
         this.mesh = new THREE.Mesh( geometry, material );
         
@@ -46,7 +46,7 @@ class App{
     }
     
 	render( ) {   
-        this.mesh.rotateY( 0.01 );
+        this.mesh.rotateY( 0.001 );
         this.renderer.render( this.scene, this.camera );
     }
 }

@@ -15,7 +15,7 @@ class App{
 		this.camera.position.set( 0, 4, 14 );
         
 		this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color( 0xaaaaaa );
+        this.scene.background = new THREE.Color( 0xC5AFDB );
 
 		const ambient = new THREE.HemisphereLight(0xffffff, 0x666666, 0.3);
 		this.scene.add(ambient);
@@ -33,7 +33,8 @@ class App{
 		container.appendChild( this.renderer.domElement );
 		
         //Add code here
-        
+        this.LoadingBar = new LoadingBar();
+        this.loadFBX();
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
         this.controls.target.set(0, 3.5, 0);
@@ -62,9 +63,50 @@ class App{
     
     loadGLTF(){
         const self = this;
+        const loader = new GLTFLoader( ).setPath('../../assets/');
+
+        loader.load(
+            'office-chair.glb',
+            function(gltf){
+                self.chair = gltf.scene;
+                const bbox = new THREE.Box3().setFromObject( gltf.scene);
+                console.log(`min:${vector3ToString(bbox.min, 2)} -
+                max:${vector3ToString(bbox.max, 2)}`);
+                self.scene.add(gltf.scene);
+                self.LoadingBar.visible = false;
+                self.renderer.setAnimationLoop (self.render.bind(self));
+            },
+            function(xhr){
+                self.LoadingBar.progress = xhr.loaded/xhr.total;
+            },
+            function(err){
+                console.error(err);
+            }
+        )
     }
     
     loadFBX(){
+        const self = this;
+        const loader = new FBXLoader( ).setPath('../../assets/');
+
+        loader.load(
+            'squire4.fbx',
+            function(object){
+                self.chair = object;
+                const bbox = new THREE.Box3().setFromObject( object);
+                console.log(`min:${vector3ToString(bbox.min, 2)} -
+                max:${vector3ToString(bbox.max, 2)}`);
+                self.scene.add(object);
+                self.LoadingBar.visible = false;
+                self.renderer.setAnimationLoop (self.render.bind(self));
+            },
+            function(xhr){
+                self.LoadingBar.progress = xhr.loaded/xhr.total;
+            },
+            function(err){
+                console.error(err);
+            }
+        )
     }
     
     resize(){
@@ -74,7 +116,7 @@ class App{
     }
     
 	render( ) {   
-        this.chair.rotateY( 0.01 );
+        this.chair.rotateY( 0.001 );
         this.renderer.render( this.scene, this.camera );
     }
 }
